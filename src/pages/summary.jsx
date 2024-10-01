@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 import Session from '../helpers/session'
 
-export default function () {
+export default function Summary () {
   const [session, setSession] = useState(null)
 
   useEffect(() => {

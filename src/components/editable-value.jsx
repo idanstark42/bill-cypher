@@ -18,10 +18,6 @@ export default function EditableValue ({ name, control }) {
     if (save) setValue(tempValue)
   }
 
-  function handleChange (event) {
-    setValue(event.target.value)
-  }
-
   function input () {
     return <div className='editing-value'>
       <input name={name} type='text' value={tempValue} onChange={e => setTempValue(e.target.value)} autoFocus />

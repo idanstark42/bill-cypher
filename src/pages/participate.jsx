@@ -7,7 +7,7 @@ import { FaPlay } from 'react-icons/fa'
 import Session from '../helpers/session'
 import EditableValue from '../components/editable-value'
 
-export default function () {
+export default function Participate () {
   const [session, setSession] = useState(null)
   const [widthRatio, setWidthRatio] = useState(1)
   const [heightRatio, setHeightRatio] = useState(1)
