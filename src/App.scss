@@ -27,6 +27,30 @@ input[type="file"] {
   display: none;
 }
 
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  background-image: url('./images/loader.gif');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  z-index: 1000;
+  animation: loader-float-up-and-down 3s infinite;
+}
+
+@keyframes loader-float-up-and-down {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1rem);
+  }
+}
+
 .editing-value {
   display: flex;
   flex-direction: row;
@@ -64,7 +88,7 @@ input[type="file"] {
 }
 
 .image-display {
-  height: calc(100% - 12rem);
+  height: calc(100% - 14.5rem);
   width: calc(100% - 2rem);
   margin: 0.5rem 1rem;
   position: relative;
@@ -78,8 +102,8 @@ input[type="file"] {
   overflow: scroll;
 
   > img {
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    height: 100%;
   }
 }
 
@@ -90,9 +114,11 @@ input[type="file"] {
 
   background: none;
   border: #000000 1px dashed;
+  border-radius: 2px;
+  box-sizing: border-box;
 
   &.participating {
-    background: #88bf4070;
+    border: #000000 2px solid;
   }
 }
 
@@ -114,6 +140,11 @@ input[type="file"] {
   }
 }
 
+.question {
+  text-align: center;
+  color: white;
+}
+
 .button {
   width: calc(100% - 2rem);
   height: 3rem;
@@ -129,8 +160,8 @@ input[type="file"] {
 
   cursor: pointer;
 
-  font-family: 'Roboto', sans-serif;
   text-transform: uppercase;
+  font-size: 1.2rem;
 
   &:last-child {
     margin-bottom: 1rem;

@@ -1,3 +1,5 @@
+import { compressImage, MAX_FILE_SIZE } from './compress-image'
+
 const MONGODB_API_ACTION_ENDPOINT = process.env.REACT_APP_MONGODB_API_ACTION_ENDPOINT
 const MONGODB_APP_ID = process.env.REACT_APP_REALM_APP_ID
 const MONGODB_DATABASE = process.env.REACT_APP_MONGODB_DATABASE
@@ -7,7 +9,10 @@ const UPLOAD_PRESET = process.env.REACT_APP_UPLOAD_PRESET
 
 // uploading images to cloudinary to the folder 'bill-cypher'
 
-export async function uploadImage (file) {
+export async function uploadImage (file, compress = false) {
+  if (compress && file.size > MAX_FILE_SIZE) {
+    file = await compressImage(file)
+  }
   const data = new FormData()
   data.append('file', file)
   data.append('upload_preset', UPLOAD_PRESET)

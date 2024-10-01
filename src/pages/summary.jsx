@@ -21,7 +21,8 @@ export default function Summary () {
     <div className='total'>{person.total.toFixed(2)}</div>
     {person.items.map(item => [
       <div className='item' style={{
-        backgroundImage: `url(${session.data.image})`,
+        backgroundImage: `url(${session.data.compressedImage})`,
+        // not working after compression
         backgroundPositionX: -item.left - item.width - 30, backgroundPositionY: -item.top + 3
       }} />,
       <div className='price'>{item.value.toFixed(2)}</div>

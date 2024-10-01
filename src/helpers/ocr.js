@@ -1,6 +1,14 @@
+import { compressImage, MAX_FILE_SIZE } from './compress-image'
+
 const OCR_SPACE_API_KEY = process.env.REACT_APP_OCR_SPACE_API_KEY
 
 export default async function getWords (file) {
+  // if the file size is larger then 1024 MB, the OCR API will not work
+  // In that case we compress the image before sending it to the API
+  if (file.size > MAX_FILE_SIZE) {
+    file = await compressImage(file)
+  }
+  
   const ocrData = await getOCR(file)
   const words = []
   for (const region of ocrData.ParsedResults[0].TextOverlay.Lines) {

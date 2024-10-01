@@ -6,8 +6,10 @@ import { FaPlay } from 'react-icons/fa'
 
 import Session from '../helpers/session'
 import EditableValue from '../components/editable-value'
+import Loader from '../components/loader'
 
 export default function Participate () {
+  const [loading, setLoading] = useState(true)
   const [session, setSession] = useState(null)
   const [widthRatio, setWidthRatio] = useState(1)
   const [heightRatio, setHeightRatio] = useState(1)
@@ -39,6 +41,7 @@ export default function Participate () {
       const { width, height } = img.getBoundingClientRect()
       setWidthRatio(width / naturalWidth)
       setHeightRatio(height / naturalHeight)
+      setLoading(false)
     }
 
     const load = async () => {
@@ -77,14 +80,15 @@ export default function Participate () {
   if (!session) return null
 
   return [
-    <div className='fullscreen-image'>
-      <img src={session.data.image} />
+    loading && <Loader key='loader' />,
+    <div className='fullscreen-image' key='fullscreen-image'>
+      <img src={session.data.image} alt='display' />
       {session.data.numbers.map((number, i) => (
         !(widthRatio === 1 || heightRatio === 1) && <div className={`number ${participations.some(participation => participation.index === i) ? 'participating' : ''}`} key={i} onClick={() => participate(i)} style={{
-          top: number.top * heightRatio - 1,
-          left: number.left * widthRatio - 1,
-          width: number.width * widthRatio + 2,
-          height: number.height * heightRatio + 2
+          top: number.top * heightRatio - 2,
+          left: number.left * widthRatio - 2,
+          width: number.width * widthRatio + 4,
+          height: number.height * heightRatio + 4
         }}>
         </div>
       ))}
