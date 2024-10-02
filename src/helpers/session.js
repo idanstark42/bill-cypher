@@ -45,6 +45,24 @@ export default class Session {
     return this.data.discounts?.reduce((total, discount) => total * (discount.value / 100), 1) * 100 || 0
   }
 
+  async addDiscount (value) {
+    await this.update({ $push: { 'data.discounts': { value } } })
+  }
+
+  async removeDiscount (index) {
+    await this.update({ $unset: { [`data.discounts.${index}`]: '' } })
+    await this.update({ $pull: { 'data.discounts': null } })
+  }
+
+  async addTip (value) {
+    await this.update({ $push: { 'data.tips': { value } } })
+  }
+
+  async removeTip (index) {
+    await this.update({ $unset: { [`data.tips.${index}`]: '' } })
+    await this.update({ $pull: { 'data.tips': null } })
+  }
+
   get total () {
     if (this.data.total) return this.data.total.value
     return this.items.reduce((total, item) => total + this.finalValue(item.value), 0)

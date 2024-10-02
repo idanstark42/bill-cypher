@@ -5,27 +5,41 @@ import { FaPlusMinus } from 'react-icons/fa6'
 import Session from '../helpers/session'
 import Items from '../components/items'
 import People from '../components/people'
-import useModal from '../components/model'
+import useModal from '../components/modal'
+import EditableValue from '../components/editable-value'
+import Loader from '../components/loader'
+import TipsAndDiscounts from '../components/tips-and-discounts'
 
 export default function Summary () {
+  const [loading, setLoading] = useState(true)
   const [session, setSession] = useState(null)
   const [tab, setTab] = useState('items')
+  const [total, setTotal] = useState(0)
   const { Modal: TipsAndDiscountsModal, open: openTipsAndDiscounta } = useModal('tips-and-discounts')
 
   useEffect(() => {
     const id = window.location.pathname.split('/')[2]
 
     const load = async () => {
-      setSession(await Session.load(id))
+      const session = await Session.load(id)
+      setSession(session)
+      setTotal(session.total)
+      setLoading(false)
     }
     load()
   }, [])
 
-  if (!session) return null
+  async function updateTotal (value) {
+    setLoading(true)
+    await session.update({ $set: { 'data.total.value': value } })
+    setTotal(value)
+    setLoading(false)
+  }
+
+  if (loading) return <Loader />
 
   console.log(session.data)
 
-  const total = session.total
   const totalDiff = session.totalDiff
 
   return <div className='summary'>
@@ -44,25 +58,14 @@ export default function Summary () {
     </div>
     <div className='drawer'>
       <div className='total text'>
-        total: {total} {totalDiff ? <span style={{ color: 'red' }}>({totalDiff > 0 ? 'missing ' : 'over by '}{Math.abs(totalDiff).toFixed(2)})</span> : ''}
+        Total: <EditableValue name='Total' control={[total, updateTotal]} /> {totalDiff ? <span style={{ color: 'red' }}>({totalDiff > 0 ? '-' : '+'}{Math.abs(totalDiff).toFixed(2)})</span> : ''}
       </div>
       <div className='button blue' onClick={openTipsAndDiscounta}>
         <FaPlusMinus /><FaPercent />
       </div>
     </div>
     <TipsAndDiscountsModal>
-      <div className='tips-and-discounts'>
-        <div className='title'>Tip</div>
-        {session.data.tips?.map((tip, index) => <div className='tip' key={index}>
-          <div className='value'>{tip.value}%</div>
-        </div>)}
-        <div className='add-tip blue button'>Add tip</div>
-        <div className='title'>Discount</div>
-        {session.data.discounts?.map((discount, index) => <div className='discount' key={index}>
-          <div className='value'>{discount.value}%</div>
-        </div>)}
-        <div className='add-discount blue button'>Add discount</div>
-      </div>
+      <TipsAndDiscounts session={session} />
     </TipsAndDiscountsModal>
   </div>
 }
