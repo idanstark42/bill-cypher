@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
+import { FaUser, FaShoppingCart } from 'react-icons/fa'
 
 import Session from '../helpers/session'
+import Items from '../components/items'
+import People from '../components/people'
 
 export default function Summary () {
   const [session, setSession] = useState(null)
+  const [tab, setTab] = useState('items')
 
   useEffect(() => {
     const id = window.location.pathname.split('/')[2]
@@ -16,16 +20,19 @@ export default function Summary () {
 
   if (!session) return null
 
-  return session.payments.map(person => <div className='payment-card'>
-    <div className='name'>{person.name}</div>
-    <div className='total'>{person.total.toFixed(2)}</div>
-    {person.items.map(item => [
-      <div className='item' style={{
-        backgroundImage: `url(${session.data.compressedImage})`,
-        // not working after compression
-        backgroundPositionX: -item.left - item.width - 30, backgroundPositionY: -item.top + 3
-      }} />,
-      <div className='price'>{item.value.toFixed(2)}</div>
-    ])}
-  </div>)
+  return <div className='summary'>
+    <div className='tabs'>
+      <div className={`tab ${tab === 'items' ? 'yellow' : 'blue'} button`} onClick={() => setTab('items')}>
+        <FaShoppingCart />
+        <span>Items</span>
+      </div>
+      <div className={`tab ${tab === 'people' ? 'yellow' : 'blue'} button`} onClick={() => setTab('people')}>
+        <FaUser />
+        <span>People</span>
+      </div>
+    </div>
+    <div className='content'>
+      {tab === 'items' ? <Items session={session} /> : <People session={session} />}
+    </div>
+  </div>
 }

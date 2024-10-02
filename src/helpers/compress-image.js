@@ -1,4 +1,5 @@
 export function compressImage (file) {
+  console.log('compressing image. file size:', file.size)
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = e => {
@@ -14,6 +15,9 @@ export function compressImage (file) {
       img.src = e.target.result
     }
     reader.readAsDataURL(file)
+  }).then(result => {
+    console.log('compressed image. file size:', result.size)
+    return result
   })
 }
 

@@ -10,13 +10,12 @@ export default class Session {
     return `${window.location.origin}/participate/${this.id}`
   }
 
-  get payments () {
+  get people () {
     const people = this.data.people.map(person => ({ name: person.name, items: [] }))
     this.data.numbers.forEach(item => {
       const total = item.value
       const peopleCount = this.data.people.filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))).length
       if (peopleCount === 0) return
-      console.log(peopleCount)
       const pricePerPerson = total / peopleCount
       this.data.people
         .filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item)))
@@ -26,6 +25,16 @@ export default class Session {
       person.total = person.items.reduce((total, item) => total + item.value, 0)
     })
     return people
+  }
+
+  get items () {
+    return this.data.numbers
+      .filter(item => this.data.people.some(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))))
+      .map(item => ({
+        ...item,
+        participations: this.data.people.filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))),
+        pricePerPerson: item.value / this.data.people.filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))).length
+      }))
   }
 
   async update (update, options) {
