@@ -30,11 +30,16 @@ export default class Session {
   get items () {
     return this.data.numbers
       .filter(item => this.data.people.some(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))))
-      .map(item => ({
-        ...item,
-        participations: this.data.people.filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))),
-        pricePerPerson: item.value / this.data.people.filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))).length
-      }))
+      .map(item => {
+        const participations = this.data.people.filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item)))
+        return {
+          ...item,
+          participations,
+          priceOf: () => item.value / participations.length,
+          percentOf: () => (1 / participations.length) * 100,
+          sharesOf: () => 1
+        }
+      })
   }
 
   get tip () {

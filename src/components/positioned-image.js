@@ -34,7 +34,7 @@ export default function PositionedImage ({ item, imageURL }) {
     backgroundRepeat: 'no-repeat',
     backgroundSize: item.height / height * 90 + '%',
     backgroundPositionX: height ? (-item.left * item.height / height * 0.9 * ratio + 5) : 0,
-    backgroundPositionY: height ? -item.top * item.height / height * 0.9 * ratio + height * 0.25 : 0,
+    backgroundPositionY: height ? (-item.top * item.height / height * 0.9 * ratio + 5) : 0,
     border: '1px solid black',
   }} ref={image} />
 }

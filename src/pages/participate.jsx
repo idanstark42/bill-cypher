@@ -61,7 +61,7 @@ export default function Participate () {
 
   function participate (index) {
     if (!participations.some(participation => participation.index === index)) {
-      setParticipations([...participations, { index, type: 'basic' }])
+      setParticipations([...participations, { index }])
     } else {
       setParticipations(participations.filter(participation => participation.index !== index))
     }

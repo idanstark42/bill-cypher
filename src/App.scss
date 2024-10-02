@@ -494,5 +494,41 @@ input[type="file"] {
         font-size: 1rem;
       }
     }
+
+    > span {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .editing-value {
+      color: black;
+      min-width: unset;
+      flex-grow: unset;
+      gap: 0;
+
+      span {
+        flex-grow: unset;
+        width: 2rem;
+        border-bottom: 1px solid black;
+
+        &::after {
+          content: '%';
+        }
+      }
+
+      input {
+        width: 2rem;
+        background: none;
+        border: none;
+        color: black;
+        border-bottom: black 1px solid;
+        outline: none;
+        font-weight: bold;
+        font-family: 'Expletus Sans', sans-serif;
+        font-size: 1rem;
+      }
+    }
   }
 }

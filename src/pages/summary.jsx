@@ -38,8 +38,6 @@ export default function Summary () {
 
   if (loading) return <Loader />
 
-  console.log(session.data)
-
   const totalDiff = session.totalDiff
 
   return <div className='summary'>
