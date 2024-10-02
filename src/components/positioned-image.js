@@ -33,8 +33,8 @@ export default function PositionedImage ({ item, imageURL }) {
     backgroundImage: (ratio === 1) ? '' : `url(${imageURL})`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: item.height / height * 90 + '%',
-    backgroundPositionX: -item.left * item.height / height * 0.9 * ratio + 5,
-    backgroundPositionY: -item.top * item.height / height * 0.9 * ratio + height * 0.25,
+    backgroundPositionX: height ? (-item.left * item.height / height * 0.9 * ratio + 5) : 0,
+    backgroundPositionY: height ? -item.top * item.height / height * 0.9 * ratio + height * 0.25 : 0,
     border: '1px solid black',
   }} ref={image} />
 }

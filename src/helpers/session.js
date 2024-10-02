@@ -37,6 +37,28 @@ export default class Session {
       }))
   }
 
+  get tip () {
+    return this.data.tips?.reduce((total, tip) => total + tip.value, 0) || 0
+  }
+
+  get discount () {
+    return this.data.discounts?.reduce((total, discount) => total * (discount.value / 100), 1) * 100 || 0
+  }
+
+  get total () {
+    if (this.data.total) return this.data.total.value
+    return this.items.reduce((total, item) => total + this.finalValue(item.value), 0)
+  }
+
+  get totalDiff () {
+    if (!this.data.total) return undefined
+    return this.total - this.items.reduce((total, item) => total + this.finalValue(item.value), 0)
+  }
+
+  finalValue (value) {
+    return value * (1 + (this.tip / 100)) * (1 - this.discount / 100)
+  }
+
   async update (update, options) {
     await (await Session.collection()).updateOne({ _id: { $oid: this.id } }, update, options)
     const response = await (await Session.collection()).findOne({ _id: { $oid: this.id } })

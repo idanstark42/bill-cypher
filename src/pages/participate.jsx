@@ -68,6 +68,7 @@ export default function Participate () {
   }
 
   async function next () {
+    setLoading(true)
     if (session.data.people.find(person => person.name === name)) {
       await session.update({ $set: { 'data.people.$[person].participations': participations } }, { arrayFilters: [{ 'person.name': name }] })
     } else {
