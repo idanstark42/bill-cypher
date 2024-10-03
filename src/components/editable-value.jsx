@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { FaCheck } from 'react-icons/fa'
 import { FaTimes } from 'react-icons/fa'
@@ -8,6 +8,10 @@ export default function EditableValue ({ name, control }) {
   const [editing, setEditing] = useState(false)
   const [value, setValue] = control
   const [tempValue, setTempValue] = useState(value)
+
+  useEffect(() => {
+    setTempValue(value)
+  }, [value])
 
   function startEditing () {
     setEditing(true)

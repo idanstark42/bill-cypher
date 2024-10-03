@@ -15,7 +15,7 @@ export default function People ({ session }) {
       </div>
       <div className='items'>
         {person.items.map((item, index) => [
-          <div className='value' key={`value ${index}`}>{session.finalValue(item.value).toFixed(2)}</div>,
+          <div className='value' key={`value ${index}`}>{session.finalValue(item.priceOf(person.sessionData)).toFixed(2)}</div>,
           <PositionedImage item={item} imageURL={session.data.image} key={`image ${index}`} />
         ])}
       </div>
