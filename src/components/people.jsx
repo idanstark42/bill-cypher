@@ -14,10 +14,10 @@ export default function People ({ session }) {
         </div>
       </div>
       <div className='items'>
-        {person.items.map((item, index) => <div className='item' key={index}  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '1rem' }}>
-          <div className='value'>{session.finalValue(item.value).toFixed(2)}</div>
-          <PositionedImage item={item} imageURL={session.data.image} />
-        </div>)}
+        {person.items.map((item, index) => [
+          <div className='value' key={`value ${index}`}>{session.finalValue(item.value).toFixed(2)}</div>,
+          <PositionedImage item={item} imageURL={session.data.image} key={`image ${index}`} />
+        ])}
       </div>
     </div>)}
   </div>

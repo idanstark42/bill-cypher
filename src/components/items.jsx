@@ -32,7 +32,7 @@ function Item ({ item, session }) {
     <div className='paying-title' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem' }}>
       <div style={{ fontWeight: 'bold', flexGrow: 1 }}>paying</div>
       <div className='side-buttons' style={{ display: 'flex', gap: '0.5rem', flexGrow: 5 }}>
-        {Object.entries(DISPLAYS).map(([key, { Icon }]) => <Icon key={key} onClick={() => setDisplay(key)} style={{ cursor: 'pointer', ...(display === key ? { color: '#f0d07d' } : {}) }} />)}
+        {Object.entries(DISPLAYS).map(([key, { Icon }]) => <Icon key={key} onClick={() => setDisplay(key)} style={{ cursor: 'pointer', ...(display === key ? { color: '#368181' } : {}) }} />)}
       </div>
     </div>
     <div className='participations'>

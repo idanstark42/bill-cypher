@@ -416,14 +416,38 @@ input[type="file"] {
   }
 
   .card {
-    background: #FFFFFFAA;
+    background: #cbcdcd;
     box-sizing: border-box;
+    border-radius: 0.5rem;
     width: calc(100% - 2rem);
     padding: 0.5rem;
     gap: 0.5rem;
 
     .discount, .tip {
       font-size: small;
+    }
+  }
+
+  .person .items {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 0.5rem;
+
+    .item {
+      height: 2rem;
+    }
+
+    .name, .total {
+      font-weight: bold;
+    }
+
+    .total, .price {
+      text-align: right;
+
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
     }
   }
 
