@@ -15,6 +15,7 @@ export default function Summary () {
   const [session, setSession] = useState(null)
   const [tab, setTab] = useState('items')
   const [total, setTotal] = useState(0)
+  const [syncInterval, setSyncInterval] = useState(null)
   const { Modal: TipsAndDiscountsModal, open: openTipsAndDiscounta } = useModal('tips-and-discounts')
 
   useEffect(() => {
@@ -28,6 +29,12 @@ export default function Summary () {
     }
     load()
   }, [])
+
+  useEffect(() => {
+    if (session && !syncInterval) {
+      setSyncInterval(setInterval(() => session.sync(), 5000))
+    }
+  }, [session, syncInterval])
 
   async function updateTotal (value) {
     setLoading(true)
@@ -56,7 +63,7 @@ export default function Summary () {
     </div>
     <div className='drawer'>
       <div className='total text'>
-        Total: <EditableValue name='Total' control={[total, updateTotal]} /> {totalDiff ? <span style={{ color: 'red' }}>({totalDiff > 0 ? '-' : '+'}{Math.abs(totalDiff).toFixed(2)})</span> : ''}
+        Total: <EditableValue name='Total' control={[total.toFixed(2), updateTotal]} /> {totalDiff ? <span style={{ color: 'red' }}>({totalDiff > 0 ? '-' : '+'}{Math.abs(totalDiff).toFixed(2)})</span> : ''}
       </div>
       <div className='button blue' onClick={openTipsAndDiscounta}>
         <FaPlusMinus /><FaPercent />

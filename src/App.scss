@@ -120,7 +120,7 @@ input[type="file"] {
   }
 
   > .content {
-    background: #000000DD;
+    background: #000000EE;
     padding: 1rem;
     box-sizing: border-box;
     width: 100%;
@@ -466,6 +466,14 @@ input[type="file"] {
 
     > :nth-child(4n) {
       text-align: right;
+    }
+
+    .editing-value {
+      min-width: unset;
+
+      input {
+        width: 2rem;
+      }
     }
   }
 
