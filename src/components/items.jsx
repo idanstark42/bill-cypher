@@ -30,8 +30,6 @@ function Item ({ item, session }) {
     await session.update({ '$set': { 'data': session.data } })
   })
 
-  console.log(item)
-
   return <div className='item card'>
     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', gap: '1rem', alignItems: session.tip || session.discount ? 'flex-start' : 'center' }}>
       <div className='price' style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
@@ -44,8 +42,8 @@ function Item ({ item, session }) {
     </div>
     <div className='paying-title' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem' }}>
       <div style={{ fontWeight: 'bold', flexGrow: 1 }}>paying</div>
-      <div className='side-buttons' style={{ display: 'flex', gap: '0.5rem', flexGrow: 5 }}>
-        {Object.entries(DISPLAYS).map(([key, { Icon }]) => <Icon key={key} onClick={() => setDisplay(key)} style={{ cursor: 'pointer', ...(display === key ? { color: '#368181' } : {}) }} />)}
+      <div className='side-buttons' style={{ display: 'flex', gap: '0.5rem', flexGrow: 5, alignItems: 'center' }}>
+        {Object.entries(DISPLAYS).map(([key, { Icon }]) => <Icon key={key} onClick={() => setDisplay(key)} style={{ cursor: 'pointer', ...(display === key ? { background: 'black', color: '#878989', borderRadius: '50%', padding: 4 } : {}) }} />)}
       </div>
     </div>
     <div className='participations'>
@@ -53,8 +51,8 @@ function Item ({ item, session }) {
         <div className='name' key={`name ${index}`}>{person.name}</div>,
         <div className='price' key={`price ${index}`}>
           {Object.keys(DISPLAYS).map(d => {
-            return <span style={(d === display) ? {} : { display: 'none' }}>
-              <EditableValue key={d} name={d} control={[DISPLAYS[d].show(item, person), update(DISPLAYS[d].update(item, person))]} />
+            return <span style={(d === display) ? {} : { display: 'none' }} key={d}>
+              <EditableValue name={d} control={[DISPLAYS[d].show(item, person), update(DISPLAYS[d].update(item, person))]} />
             </span>
           }).reduce((all, arr) => all.concat(arr), [])}
         </div>,

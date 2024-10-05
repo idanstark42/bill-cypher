@@ -23,7 +23,7 @@ export default function TipsAndDiscounts ({ session }) {
 
   async function addTip () {
     setLoading(true)
-    await session.addTip(addingTip)
+    await session.addTip(Number(addingTip))
     setAddingTip('none')
     setLoading(false)
   }
@@ -42,7 +42,7 @@ export default function TipsAndDiscounts ({ session }) {
 
   async function addDiscount () {
     setLoading(true)
-    await session.addDiscount(addingDiscount)
+    await session.addDiscount(Number(addingDiscount))
     setAddingDiscount('none')
     setLoading(false)
   }
@@ -63,7 +63,7 @@ export default function TipsAndDiscounts ({ session }) {
         <FaSave onClick={addTip} />
         <FaRegTrashAlt onClick={() => setAddingTip('none')} />
       </div>
-    </div> : <div className='add-tip blue button' onClick={() => setAddingTip(10)}>Add tip</div> }
+    </div> : <div className='add-tip yellow empty button' onClick={() => setAddingTip(10)}>Add tip</div> }
     <div className='title' style={{ fontSize: '3rem', margin: 0 }}>Discounts</div>
     <div className='text'>discounts are multiplied</div>
     {session.data.discounts?.map((discount, index) => <div className='discount' key={index}>
@@ -78,6 +78,6 @@ export default function TipsAndDiscounts ({ session }) {
         <FaSave onClick={addDiscount} />
         <FaRegTrashAlt onClick={() => setAddingDiscount('none')} />
       </div>
-    </div> : <div className='add-discount blue button' onClick={() => setAddingDiscount(10)}>Add discount</div>}
+    </div> : <div className='add-discount yellow empty button' onClick={() => setAddingDiscount(10)}>Add discount</div>}
   </div>
 }

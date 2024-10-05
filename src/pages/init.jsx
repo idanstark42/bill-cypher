@@ -132,11 +132,11 @@ export default function Init () {
       <div className='image-display' style={{ display: 'none' }} key='image-display'>
         <img src={image} alt="display" id='image' />
       </div>,
-      <div className='blue button' key='camera-button' onClick={() => document.querySelector('input[type="file"][capture]').click()}>
+      <div className='yellow button' key='camera-button' onClick={() => document.querySelector('input[type="file"][capture]').click()}>
         <FaCamera />
         <span>Take picture</span>
       </div>,
-      <div onClick={() => document.querySelector('input[type="file"]:not([capture])').click()} className='blue button' key='select-button'>
+      <div onClick={() => document.querySelector('input[type="file"]:not([capture])').click()} className='yellow button' key='select-button'>
       <FiUpload />
       <span>Upload Image</span>
     </div>

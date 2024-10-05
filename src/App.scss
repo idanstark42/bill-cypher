@@ -66,12 +66,12 @@ input[type="file"] {
     outline: none;
     background: #000000AA;
     color: white;
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid black;
   }
 
   > span {
     flex-grow: 1;
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid black;
   }
 }
 
@@ -146,9 +146,10 @@ input[type="file"] {
   gap: 1rem;
 
   > .button {
-    width: 3rem;
+    width: 12rem;
     height: 3rem;
     margin: 0 !important;
+    font-size: 1rem;
   }
 }
 
@@ -251,6 +252,10 @@ input[type="file"] {
 .question, .text {
   text-align: center;
   color: white;
+
+  &.yellow {
+    color: #f0d07d;
+  }
 }
 
 .button {
@@ -280,29 +285,42 @@ input[type="file"] {
     text-align: center;
   }
 
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   &.red {
     background: #d8877a;
     border: 1px solid #d8877a;
+    &.empty { color: #d8877a; }
   }
 
   &.yellow {
     background: #f0d07d;
     border: 1px solid #f0d07d;
+    &.empty { color: #f0d07d; }
   }
 
   &.blue {
     background: #cbcdcd;
     border: 1px solid #cbcdcd;
+    &.empty { color: #cbcdcd; }
   }
 
   &.green {
     background: #88bf40;
     border: 1px solid #88bf40;
+    &.empty { color: #88bf40; }
   }
 
   &[disabled] {
     cursor: not-allowed;
     opacity: 0.5;
+  }
+
+  &.empty {
+    background: none !important;
   }
 }
 
@@ -416,7 +434,7 @@ input[type="file"] {
   }
 
   .card {
-    background: #cbcdcd;
+    background: #cbcdcdaa;
     box-sizing: border-box;
     border-radius: 0.5rem;
     width: calc(100% - 2rem);
@@ -431,6 +449,7 @@ input[type="file"] {
   .person .items {
     display: grid;
     grid-template-columns: 4rem 1fr;
+    align-items: center;
     gap: 0.5rem;
 
     .item {

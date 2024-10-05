@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaUser, FaShoppingCart, FaPercent } from 'react-icons/fa'
-import { FaPlusMinus } from 'react-icons/fa6'
+import { FaUser, FaShoppingCart } from 'react-icons/fa'
 
 import Session from '../helpers/session'
 import Items from '../components/items'
@@ -49,11 +48,11 @@ export default function Summary () {
 
   return <div className='summary'>
     <div className='tabs'>
-      <div className={`tab ${tab === 'items' ? 'yellow' : 'blue'} button`} onClick={() => setTab('items')}>
+      <div className={`tab yellow ${tab === 'items' ? '' : 'empty'} button`} onClick={() => setTab('items')}>
         <FaShoppingCart />
         <span>Items</span>
       </div>
-      <div className={`tab ${tab === 'people' ? 'yellow' : 'blue'} button`} onClick={() => setTab('people')}>
+      <div className={`tab yellow ${tab === 'people' ? '' : 'empty'} button`} onClick={() => setTab('people')}>
         <FaUser />
         <span>People</span>
       </div>
@@ -62,11 +61,11 @@ export default function Summary () {
       {tab === 'items' ? <Items session={session} /> : <People session={session} />}
     </div>
     <div className='drawer'>
-      <div className='total text'>
+      <div className='total yellow text'>
         Total: <EditableValue name='Total' control={[total.toFixed(2), updateTotal]} /> {totalDiff ? <span style={{ color: 'red' }}>({totalDiff > 0 ? '-' : '+'}{Math.abs(totalDiff).toFixed(2)})</span> : ''}
       </div>
-      <div className='button blue' onClick={openTipsAndDiscounta}>
-        <FaPlusMinus /><FaPercent />
+      <div className='yellow empty button' onClick={openTipsAndDiscounta} style={{ display: 'flex', flexGrow: 1 }}>
+          Tips & Discounts
       </div>
     </div>
     <TipsAndDiscountsModal>

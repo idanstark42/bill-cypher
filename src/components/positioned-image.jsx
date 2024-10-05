@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 
 export default function PositionedImage ({ item, imageURL }) {
   const [ratio, setRatio] = useState(1)
-  const [height, setHeight] = useState(0)
   const image = useRef(null)
 
   useEffect(() => {
@@ -17,8 +16,7 @@ export default function PositionedImage ({ item, imageURL }) {
         setTimeout(processImage, 500)
         return
       }
-      const { width, height } = image.current.getBoundingClientRect()
-      setHeight(height)
+      const { width } = image.current.getBoundingClientRect()
       setRatio(width / naturalWidth)
     }
 
@@ -32,9 +30,9 @@ export default function PositionedImage ({ item, imageURL }) {
     backgroundColor: 'black',
     backgroundImage: (ratio === 1) ? '' : `url(${imageURL})`,
     backgroundRepeat: 'no-repeat',
-    backgroundSize: item.height / height * 90 + '%',
-    backgroundPositionX: height ? (-item.left * item.height / height * 0.9 * ratio + 5) : 0,
-    backgroundPositionY: height ? (-item.top * item.height / height * 0.9 * ratio + 5) : 0,
+    backgroundSize: 'cover',
+    backgroundPositionX: ratio ? (-item.left * ratio + 5) : 0,
+    backgroundPositionY: ratio ? (-item.top * ratio + 5) : 0,
     outline: '1px solid black',
     borderRadius: '0.2rem',
     boxShadow: '0 0 0.2rem black',

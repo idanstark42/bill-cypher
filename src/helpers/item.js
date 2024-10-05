@@ -74,7 +74,6 @@ export default class Item {
 
 function selectDevisionFunction (item, people) {
   const participations = people.map(person => item.participation(person))
-  console.log(participations)
   if (participations[0].price !== undefined) {
     const constraints = people.filter(person => item.participation(person).price !== undefined).map(person => ({ person, value: item.participation(person).price }))
     return new PriceDevisionFunction(item._item.value, people.length, constraints)

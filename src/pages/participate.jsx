@@ -68,6 +68,7 @@ export default function Participate () {
   }
 
   async function next () {
+    if (!name) return
     setLoading(true)
     if (session.data.people.find(person => person.name === name)) {
       await session.update({ $set: { 'data.people.$[person].participations': participations } }, { arrayFilters: [{ 'person.name': name }] })
@@ -99,7 +100,7 @@ export default function Participate () {
       <div className='yellow button' onClick={copyLink}>
         {copied ? <FaCheck /> : <FaShare />}
       </div>
-      <div className='green button' onClick={next}>
+      <div className={`yellow button ${Boolean(name) ? '' : 'disabled'}`} onClick={next}>
         <FaPlay />
       </div>
     </div>
