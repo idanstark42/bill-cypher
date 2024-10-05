@@ -100,7 +100,7 @@ export default function Participate () {
       <div className='yellow button' onClick={copyLink}>
         {copied ? <FaCheck /> : <FaShare />}
       </div>
-      <div className={`yellow button ${Boolean(name) ? '' : 'disabled'}`} onClick={next}>
+      <div className={`yellow button ${Boolean(name) && Boolean(participations.length) ? '' : 'disabled'}`} onClick={next}>
         <FaPlay />
       </div>
     </div>

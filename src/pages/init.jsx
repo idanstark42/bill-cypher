@@ -127,6 +127,7 @@ export default function Init () {
     ]
   } else {
     content = [
+      <div className='text' key='title' style={{ fontSize: '1.5rem' }}>start decyphering a bill by</div>,
       <input type='file' onChange={handleImage} capture='camera' accept='image/*' key='camera-input' />,
       <input type='file' onChange={handleImage}  key='select-input' />,
       <div className='image-display' style={{ display: 'none' }} key='image-display'>
@@ -134,11 +135,11 @@ export default function Init () {
       </div>,
       <div className='yellow button' key='camera-button' onClick={() => document.querySelector('input[type="file"][capture]').click()}>
         <FaCamera />
-        <span>Take picture</span>
+        <span>Taking its picture</span>
       </div>,
       <div onClick={() => document.querySelector('input[type="file"]:not([capture])').click()} className='yellow button' key='select-button'>
       <FiUpload />
-      <span>Upload Image</span>
+      <span>uploading its picture</span>
     </div>
     ]
   }
