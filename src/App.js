@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import Init from './pages/init'
 import Participate from './pages/participate'
-import Summary from './pages/summary'
+import Admin from './pages/admin'
 
 import './App.scss'
 
@@ -12,7 +12,7 @@ export default function App () {
     <Router>
       <Routes>
         <Route path='/participate/:id' element={<Participate />} />
-        <Route path='/summary/:id' element={<Summary />} />
+        <Route path='/admin/:id' element={<Admin />} />
         <Route path='/' element={<Init />} />
         <Route path='*' element={<Navigate to='/' />} />
       </Routes>
