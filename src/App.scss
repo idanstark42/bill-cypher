@@ -342,7 +342,7 @@ input[type="file"] {
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
-  padding: 0.5rem 1rem 0 1rem;
+  padding: 0.5rem 0.5rem 0 0.5rem;
 }
 
 .bottom-bar {
@@ -369,9 +369,14 @@ input[type="file"] {
 
 .dashboard {
   width: 100%;
-  height: calc(100% - 3rem);
-  padding: 1rem;
+  height: calc(100% - 5rem);
   box-sizing: border-box;
+  padding: 1rem 0;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1rem;
 }
 
 .card {
@@ -380,6 +385,5 @@ input[type="file"] {
   background: #f0d07daa;
   padding: 1rem;
   box-sizing: border-box;
-  border-radius: 0.5rem;
   color: black;
 }
