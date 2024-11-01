@@ -54,7 +54,7 @@ export default function Home   ({ session, setSession, move, setLoading }) {
     
     processImage()
     createImageURL()
-  }, [image])
+  }, [image]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <>
     <h2 className='title'>Bill Cypher</h2>

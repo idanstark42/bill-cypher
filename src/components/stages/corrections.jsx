@@ -32,7 +32,7 @@ export default function Corrections ({ session, setSession, move, setLoading }) 
   return [
     <div className='image-display' key='image-display'>
       <img src={image} alt="display" id='image' />
-      {activeNumbers.map((word, index) => <div key={index} className={`number`}
+      {activeNumbers.map((word, index) => <div key={index} className='number'
         style={{
           top: word.top * heightRatio - 2,
           left: word.left * widthRatio - 2,
@@ -41,7 +41,7 @@ export default function Corrections ({ session, setSession, move, setLoading }) 
         }} value={corrections[index]}>
           <EdiableValue name='correction' control={[corrections[index], value => setCorrection(index, value)]} />
         </div>)}
-        {toolNumbers.map((word, index) => <div key={index} className={`number`}
+        {toolNumbers.map((word, index) => <div key={index} className='number'
         style={{
           top: word.top * heightRatio - 2,
           left: word.left * widthRatio - 2,
