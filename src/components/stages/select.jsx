@@ -1,10 +1,13 @@
 import { useState } from 'react'
-
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa'
+
+import RequireUser from '../require-user'
+import { useUser } from '../../helpers/user'
 
 export default function Select ({ session, setSession, move, setLoading }) {
   const { numbers, widthRatio, heightRatio, image } = session
   const [selectedNumbers, setSelectedNumbers] = useState([])
+  const { user, userId } = useUser()
 
   const toggleNumber = index => {
     if (selectedNumbers.includes(index)) {
@@ -17,17 +20,17 @@ export default function Select ({ session, setSession, move, setLoading }) {
   const selected = index => selectedNumbers.includes(index)
 
   const finish = () => {
-    setSession(oldSession => ({ ...oldSession, selectedNumbers }))
     move(1)
+    setSession(oldSession => ({ ...oldSession, selectedNumbers, admin: { name: user, id: userId }, participants: [{ name: user, id: userId }] }))
   }
 
   const back = () => {
-    setSession({})
     move(-1)
+    setSession({})
   }
 
-  return [
-    <div className='image-display' key='image-display'>
+  return <RequireUser>
+    <div className='image-display'>
       <img src={image} alt="display" id='image' />
       {numbers.map((word, index) => <div key={index} className={`number ${selected(index) ? 'selected' : ''}`}
         onMouseUp={() => toggleNumber(index)}
@@ -38,10 +41,10 @@ export default function Select ({ session, setSession, move, setLoading }) {
           height: word.height * heightRatio + 4
         }} value={word.value}></div>)}
     </div>,
-    <div className='text' key='text'>
+    <div className='text'>
       Select all the relevant numbers
-    </div>,
-    <div className='buttons' key='buttons'>
+    </div>
+    <div className='buttons'>
       <div className='yellow button' onClick={back}>
         <FaArrowLeft />
         <span>Back</span>
@@ -51,5 +54,5 @@ export default function Select ({ session, setSession, move, setLoading }) {
         <FaArrowRight />
       </div>
     </div>
-  ]
+  </RequireUser>
 }

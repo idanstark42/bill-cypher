@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import {QRCodeCanvas} from 'qrcode.react'
 import { FaCheck, FaCopy } from 'react-icons/fa'
 
-export default function Dashboard ({ enabled, session, setView }) {
+export default function Dashboard ({ enabled=true, session, setView }) {
   const [showingCopy, setShowingCopy] = useState(false)
 
   const copy = () => {
@@ -21,9 +21,19 @@ export default function Dashboard ({ enabled, session, setView }) {
         <span style={{ width: 'calc(100% - 1.5rem)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{session.shareURL}</span>
       </div>
     </div>
-    <div className='card data' style={{ gridColumn: 'span 2', gridRow: 'span 2' }}>
+    <div className='card bill' style={{ gridColumn: 'span 2', gridRow: 'span 2', flexDirection: 'column' }}>
+      <div style={{ fontWeight: 'bold' }}>Bill</div>
+      <div className='items' style={{ flexGrow: 1, overflowY: 'auto' }}>
+        {session.items.map(item => <div key={item.index} style={{ display: 'flex', justifyContent: 'space-between', height: '2rem' }}>
+          {item.participations.length === 0 ?
+            <div>{item.value} (unclaimed)</div> : 
+            <div>{item.value} / {item.participations.length}</div>}
+        </div>)}
+      </div>
+      <div style={{ width: '100%', height: '2px', background: 'black', margin: '0.5rem 0' }} />
+      Total: {session.total} | {session.items.length} items
     </div>
-    <div className='card data' style={{ gridColumn: 'span 2', gridRow: 'span 2' }}>
+    <div className='card stats' style={{ gridColumn: 'span 2', gridRow: 'span 2' }}>
     </div>
   </div>
 }

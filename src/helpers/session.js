@@ -1,6 +1,7 @@
 import { MongoClient } from './backend.js'
 
 import Item from './item.js'
+import Person from './person.js'
 
 export default class Session {
   constructor (id, data, created, updated) {
@@ -8,77 +9,77 @@ export default class Session {
     this.data = data
     this.created = created
     this.updated = updated
+    this.listeners = []
   }
+
+  // Getters
 
   get shareURL () {
     return `${window.location.origin}/participate/${this.id}`
   }
 
-  get people () {
-    const people = this.data.people.map(person => ({ name: person.name, items: [], sessionData: person }))
-    this.data.numbers.forEach(item => {
-      const peopleCount = this.data.people.filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))).length
-      if (peopleCount === 0) return
-      this.data.people
-        .filter(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item)))
-        .forEach(person => { people.find(p => p.name === person.name).items.push(new Item(item, this)) })
-    })
-    people.forEach(person => {
-      person.total = person.items.reduce((total, item) => total + item.priceOf(person.sessionData), 0)
-    })
-    return people
-  }
-
-  get items () {
-    return this.data.numbers
-      .filter(item => this.data.people.some(person => person.participations.some(participation => participation.index === this.data.numbers.indexOf(item))))
-      .map(item => new Item(item, this))
+  get total () {
+    if (this.data.additions.total === undefined) return -1
+    return this._numberFromIndex(this.data.additions.total[0])
   }
 
   get tip () {
-    if (!this.data.tips || this.data.tips.length === 0) return 0
-    return this.data.tips.reduce((total, tip) => total + tip.value, 0) || 0
+    if (this.data.additions.tip === undefined) return 0
+    if (this.data.additions.tip[0].value) return this.data.additions.tip[0].value
+    return this._numberFromIndex(this.data.additions.tip[0])
+  }
+
+  set tip (value) {
+    this.update({ $set: { 'data.additions.tip': [{ value }] } })
   }
 
   get discount () {
-    if (!this.data.discounts || this.data.discounts.length === 0) return 0
-    return this.data.discounts.reduce((total, discount) => total * (discount.value / 100), 1) * 100
+    if (this.data.additions.discount === undefined) return 0
+    if (this.data.additions.discount[0].value) return this.data.additions.discount[0].value
+    return this._numberFromIndex(this.data.additions.discount[0])
   }
 
-  async addDiscount (value) {
-    await this.update({ $push: { 'data.discounts': { value } } })
+  set discount (value) {
+    this.update({ $set: { 'data.additions.discount': [{ value }] } })
   }
 
-  async removeDiscount (index) {
-    await this.update({ $unset: { [`data.discounts.${index}`]: '' } })
-    await this.update({ $pull: { 'data.discounts': null } })
+  get items () {
+    return this.data.selectedNumbers.map(index => new Item(index, this))
   }
 
-  async addTip (value) {
-    await this.update({ $push: { 'data.tips': { value } } })
+  get people () {
+    return this.data.participants.map(person => new Person(person.id, this))
   }
 
-  async removeTip (index) {
-    await this.update({ $unset: { [`data.tips.${index}`]: '' } })
-    await this.update({ $pull: { 'data.tips': null } })
+  get user () {
+    return this.currentParticipant && this.currentParticipant.id ? new Person(this.currentParticipant.id, this) : undefined
   }
 
-  get total () {
-    if (this.data.total) return this.data.total.value
-    return this.items.reduce((total, item) => total + this.finalValue(item.value), 0)
-  }
-
-  get totalDiff () {
-    if (!this.data.total) return undefined
-    return this.total - this.items.reduce((total, item) => total + this.finalValue(item.value), 0)
+  async loginAs (person) {
+    if(!this.data.participants.some(participant => participant.id === person.id)) {
+      await this.update({ $push: { 'data.participants': person } })
+    }
+    this.currentParticipant = person
   }
 
   personalTotal (person) {
     return 0
   }
 
-  finalValue (value) {
-    return value * (1 + (this.tip / 100)) * (1 - this.discount / 100)
+  // private methods
+
+  _numberFromIndex (index) {
+    return this.data.corrections[index] || this.data.numbers[index].value
+  }
+
+  _priceAfterAdditions (price) {
+    return price * (1 + this.tip / 100) (1 - this.discount / 100)
+  }
+
+  // IO methods
+
+  onUpdated (listener) {
+    this.listeners.push(listener)
   }
 
   async update (update, options) {
@@ -91,10 +92,13 @@ export default class Session {
   }
 
   async sync () {
+    if (Date.now() - this.lastSync < 3000) return
+    const lastSync = new Date()
     const updated = await Session.load(this.id)
     if (this.updated < updated.updated) {
       this.data = updated.data
       this.updated = updated.updated
+      this.listeners.forEach(listener => listener())
     }
   }
 

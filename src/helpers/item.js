@@ -1,14 +1,17 @@
+const BASIC_PARTICIPATION_KEYS = ['person', 'item']
+
 export default class Item {
-  constructor (item, session) {
-    this._item = item
+  constructor (index, session) {
+    this.index = index
     this.session = session
-    this.people = session.data.people.filter(person => person.participations.some(participation => participation.index === session.data.numbers.indexOf(item)))
-    this.devisionFunction = selectDevisionFunction(this, this.people)
+    this.divisionFunction = selectDevisionFunction(this)
   }
 
   get value () {
-    return this._item.value
+    return this.session._numberFromIndex(this.index)
   }
+
+  // box
 
   get top () {
     return this._item.top
@@ -26,67 +29,74 @@ export default class Item {
     return this._item.width
   }
 
-  get text () {
-    return this._item.text
+  // division
+
+  get participations () {
+    return this.session.data.participations.filter(participation => participation.item === this.index)
+  }
+
+  get people () {
+    const participations = this.participations
+    return this.session.people.filter(person => participations.some(participation => participation.person === person.id))
   }
 
   priceOf (person) {
-    return this.devisionFunction.priceOf(person, this.people)
+    return this.divisionFunction.priceOf(person, this)
   }
 
   percentOf (person) {
-    return this.devisionFunction.percentOf(person, this.people)
+    return this.divisionFunction.percentOf(person, this)
   }
 
   sharesOf (person) {
-    return this.devisionFunction.sharesOf(person, this.people)
+    return this.divisionFunction.sharesOf(person, this)
   }
 
   setPriceOf (person, value) {
-    if (this.devisionFunction instanceof PriceDevisionFunction) {
-      this.devisionFunction.addConstraint(person, value)
+    if (this.divisionFunction instanceof PriceDevisionFunction) {
+      this.divisionFunction.addConstraint(person, value)
     }
-    this.devisionFunction = new PriceDevisionFunction(this._item.value, this.people.length, [{ person, value }])
+    this.divisionFunction = new PriceDevisionFunction(this._item.value, this.people.length, [{ person, value }])
   }
 
   setPercentOf (person, value) {
-    if (this.devisionFunction instanceof PercentDevisionFunction) {
-      this.devisionFunction.addConstraint(person, value)
+    if (this.divisionFunction instanceof PercentDevisionFunction) {
+      this.divisionFunction.addConstraint(person, value)
     }
-    this.devisionFunction = new PercentDevisionFunction(this._item.value, this.people.length, [{ person, value }])
+    this.divisionFunction = new PercentDevisionFunction(this._item.value, this.people.length, [{ person, value }])
   }
 
   setSharesOf (person, value) {
-    if (this.devisionFunction instanceof SharesDevisionFunction) {
-      this.devisionFunction.addConstraint(person, value)
+    if (this.divisionFunction instanceof SharesDevisionFunction) {
+      this.divisionFunction.addConstraint(person, value)
     }
-    this.devisionFunction = new SharesDevisionFunction(this._item.value, this.people.length, [{ person, value }])
-  }
-
-  participation (person) {
-    return person.participations.find(p => p.index === this.session.data.numbers.indexOf(this._item))
+    this.divisionFunction = new SharesDevisionFunction(this._item.value, this.people.length, [{ person, value }])
   }
 
   flush () {
-    return this.devisionFunction.flush(this)
+    return this.divisionFunction.flush(this)
+  }
+
+  get _item () {
+    return this.session.data.numbers[this.index]
   }
 }
 
-function selectDevisionFunction (item, people) {
-  const participations = people.map(person => item.participation(person))
-  if (participations[0].price !== undefined) {
-    const constraints = people.filter(person => item.participation(person).price !== undefined).map(person => ({ person, value: item.participation(person).price }))
-    return new PriceDevisionFunction(item._item.value, people.length, constraints)
-  } else if (participations[0].percent !== undefined) {
-    const constraints = people.filter(person => item.participation(person).percent !== undefined).map(person => ({ person, value: item.participation(person).percent }))
-    return new PercentDevisionFunction(item._item.value, people.length, constraints)
-  } else if (participations[0].shares !== undefined) {
-    const constraints = people.filter(person => item.participation(person).shares !== undefined).map(person => ({ person, value: item.participation(person).shares }))
-    return new SharesDevisionFunction(item._item.value, people.length, constraints)
-  } else {
-    return new BasicDevisionFunction(item._item.value, people.length)
+function selectDevisionFunction (item) {
+  const participations = item.participations
+  for (const key in divisionFunctions) {
+    const DivisionFunction = divisionFunctions[key]
+    if (participations.some(participation => participation[key] !== undefined)) {
+      const constraints = participations
+        .filter(participation => participation[key] !== undefined)
+        .map(participation => ({ person: participation.person, value: participation[key] }))
+      return new DivisionFunction(item.value, participations.length, constraints)
+    }
   }
+  return new BasicDevisionFunction(item.value, participations.length)
 }
+
+// Division functions
 
 class BasicDevisionFunction {
   constructor (total, length) {
@@ -107,12 +117,7 @@ class BasicDevisionFunction {
   }
 
   flush (item) {
-    item.people.forEach(person => {
-      const participation = item.participation(person)
-      for (const key in participation) {
-        if (key !== 'index') delete participation[key]
-      }
-    })
+    item.participantions.forEach(participantion => cleanParticipation(participantion))
   }
 }
 
@@ -125,29 +130,25 @@ class ConstrainedDevisionFunction {
   }
 
   base (person) {
-    const constraint = this.constaints.find(c => c.person === person)
-    return constraint ? constraint.value : this.unconstrainedValue()
+    const constraint = this.constaints.find(c => c.person === person.id)
+    return constraint ? constraint.value : this._unconstrainedValue()
   }
 
   addConstraint (person, value) {
-    this.constaints.push({ person, value })
+    this.constaints.push({ person: person.id, value })
   }
 
-  unconstrainedValue () {
-    return (this.total - this.constaints.reduce((total, c) => total + c.value, 0)) / (this.length - this.constaints.length)
+  _unconstrainedValue () {
+    const constrainedTotal = this.constaints.reduce((total, c) => total + c.value, 0)
+    return (this.total - constrainedTotal) / (this.length - this.constaints.length)
   }
 
   flush (item) {
-    item.people.forEach(person => {
-      const participation = item.participation(person)
-      for (const key in participation) {
-        if (key !== 'index') delete participation[key]
-      }
-      const constraint = this.constaints.find(c => c.person === person)
+    item.participantions.forEach(participation => {
+      cleanParticipation(participation)
+      const constraint = this.constaints.find(c => c.person === participation.person)
       if (constraint) {
         participation[this.name] = constraint.value
-      } else {
-        participation[this.name] = this.unconstrainedValue()
       }
     })
   }
@@ -166,8 +167,9 @@ class PriceDevisionFunction extends ConstrainedDevisionFunction {
     return this.priceOf(person) / this.total * 100
   }
 
-  sharesOf (person, people) {
-    return sharesFromPercentsAndIndex(people.map(p => this.percentOf(p)), people.indexOf(person))
+  sharesOf (person, item) {
+    const people = item.people
+    return sharesFromPercentsAndIndex(people.map(p => this.percentOf(p)), people.findIndex(p => p.id === person.id))
   }
 }
 
@@ -185,8 +187,9 @@ class PercentDevisionFunction extends ConstrainedDevisionFunction {
     return this.base(person)
   }
 
-  sharesOf (person, people) {
-    return sharesFromPercentsAndIndex(people.map(p => this.percentOf(p)), people.indexOf(person))
+  sharesOf (person, item) {
+    const people = item.people
+    return sharesFromPercentsAndIndex(people.map(p => this.percentOf(p)), people.findIndex(p => p.id === person.id))
   }
 }
 
@@ -197,28 +200,32 @@ class SharesDevisionFunction extends ConstrainedDevisionFunction {
   }
 
   priceOf (person) {
-    return this.sharesOf(person) / this.totalShares() * this.numericTotal
+    return this.sharesOf(person) / this.total * this.numericTotal
   }
 
   percentOf (person) {
-    return this.sharesOf(person) / this.totalShares() * 100
+    return this.sharesOf(person) / this.total * 100
   }
 
   sharesOf (person) {
     return this.base(person)
   }
 
-  totalShares () {
-    return this.constaints.reduce((total, c) => total + c.value, 0) + this.unconstrainedValue() * (this.length - this.constaints.length)
-  }
-
   addConstraint (person, value) {
     super.addConstraint(person, value)
-    this.total = this.constaints.reduce((total, c) => total + c.value, 0)
+    this.total = this.constaints.reduce((total, c) => total + c.value, 0) + this._unconstrainedValue() * (this.length - this.constaints.length)
   }
 
-  unconstrainedValue () {
+  _unconstrainedValue () {
     return 1
+  }
+}
+
+function cleanParticipation (participation) {
+  for (const key in participation) {
+    if (!BASIC_PARTICIPATION_KEYS.include(key)) {
+      delete participation[key]
+    }
   }
 }
 
@@ -249,4 +256,10 @@ function primaryFactorsOf (number) {
     }
   }
   return factors
+}
+
+const divisionFunctions = {
+  price: PriceDevisionFunction,
+  percent: PercentDevisionFunction,
+  shares: SharesDevisionFunction
 }

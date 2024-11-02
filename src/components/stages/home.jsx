@@ -43,15 +43,17 @@ export default function Home   ({ session, setSession, move, setLoading }) {
         delete number.paragraph
         delete number.baseline
       })
+      move(1)
+      setLoading(false)
       setSession(oldSession => ({
         ...oldSession,
         numbers,
         widthRatio: width / naturalWidth,
         heightRatio: height / naturalHeight,
-        imageFile
+        imageFile,
+        participants: [],
+        participations: []
       }))
-      setLoading(false)
-      move(1)
     }
 
     const createImageURL = async () => {

@@ -29,19 +29,13 @@ export default function Additions ({ session, setSession, move, setLoading }) {
   }
 
   const finish = () => {
-    setSession(oldSession => ({
-      ...oldSession,
-      ...(TOOLS.reduce((acc, name) => ({ ...acc, [name]: additions[name] }), {}))
-    }))
     move(1)
+    setSession(oldSession => ({ ...oldSession, additions }))
   }
 
   const back = () => {
-    setSession(oldSession => ({
-      ...oldSession,
-      numbers: oldSession.numbers.map(number => ({ ...number, value: number.originalValue }))
-    }))
     move(-1)
+    setSession(oldSession => ({ ...oldSession, selectedNumbers: [] }))
   }
 
   return [

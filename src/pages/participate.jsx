@@ -1,82 +1,52 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-import EditableValue from '../components/editable-value'
+import RequireUser from '../components/require-user'
+import Participate from '../components/participate'
 import User from '../components/user'
 
-import { useUser } from '../helpers/user'
 import useSession from '../helpers/use-session'
+import { useUser } from '../helpers/user'
+import { useLoading } from '../helpers/use-loading'
 
-export default function Participate () {
-  const [user, setUser] = useUser()
-  const [selectedNumbers, setSelectedNumbers] = useState([])
-  const [widthRatio, setWidthRatio] = useState(1)
-  const [heightRatio, setHeightRatio] = useState(1)
+export default function ParticipationPage () {
+  const [done, setDone] = useState(false)
+  const [showDetails, sethowDetails] = useState(false)
   const session = useSession()
+  const { user, userId } = useUser()
+  const { whileLoading } = useLoading()  
 
-  useEffect(() => {
-    const processImage = () => {
-      setTimeout(() => {
-        const image = document.getElementById('image')
-        if (!image) {
-          processImage()
-          return
-        }
-
-        const { width, height } = image.getBoundingClientRect()
-        const { naturalWidth, naturalHeight } = image
-
-        setWidthRatio(width / naturalWidth)
-        setHeightRatio(height / naturalHeight)
-      }, 500)
-    }
-
-    processImage()
-  }, [session])
-
-  const toggleNumber = index => {
-    if (selectedNumbers.includes(index)) {
-      setSelectedNumbers(selectedNumbers.filter(i => i !== index))
-    } else {
-      setSelectedNumbers([...selectedNumbers, index])
-    }
-  }
-
-  const selected = index => selectedNumbers.includes(index)
-
-  const submit = async () => {
-    // TODO: Implement
+  const loginToSession = () => {
+    whileLoading(async () => await session.loginAs({ name: user, id: userId }))
   }
 
   if (!session) return <></>
 
-  const { numbers, image, selectedNumbers: relevantNumbers } = session.data
-
-  return <div className='participate'>
-    <div className='top-bar'>
-      <div className='text'>PARTICIPATE</div>
-      <User />
-    </div>
-    <div className='content'>
-      <div className='image-display' style={{ height: 'calc(100% - 6rem)' }}>
-        <img src={image} alt="display" id='image' />
-        {numbers.filter((number, index) => relevantNumbers.includes(index)).map((number, index) => <div key={index} className={`number ${selected(index) ? 'selected' : ''}`}
-          onMouseUp={() => toggleNumber(index)}
-          style={{
-            top: number.top * heightRatio - 2,
-            left: number.left * widthRatio - 2,
-            width: number.width * widthRatio + 4,
-            height: number.height * heightRatio + 4
-          }} value={number.value}></div>)}
+  if (done) return <>
+    <div className='participate' style={{ gap: 0 }}>
+      <div className='top-bar'>
+        <div className='text'>PARTICIPATE</div>
+        <User />
       </div>
-      <div className='text'>
-        Select the items you participated in
-      </div>
-      <div className='text'>
-        Total: {session.personalTotal(user)}
+      <div className='big counter'>
+        Total {session.user.total}
       </div>
       <div className='buttons'>
-        <div className='yellow button' onClick={submit}>Submit</div>
+        <div className='yellow button' onClick={() => setDone(false)}>Edit</div>
+        <div className='empty yellow button' onClick={() => sethowDetails(true)} style={{ border: 'none', textDecoration: 'underline' }} >Details</div>
       </div>
     </div>
-  </div>
+  </>
+
+  return <RequireUser force message={`Join ${session.data.admin.name}'s bill as`} onDone={loginToSession}>
+    <div className='participate' style={{ gap: 0 }}>
+      <div className='top-bar'>
+        <div className='text'>PARTICIPATE</div>
+        <User />
+      </div>
+      <Participate />
+      <div className='buttons'>
+        <div className='yellow button' onClick={() => setDone(true)}>Done</div>
+      </div>
+    </div>
+  </RequireUser>
 }
