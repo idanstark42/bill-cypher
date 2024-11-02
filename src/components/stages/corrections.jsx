@@ -26,8 +26,6 @@ export default function Corrections ({ session, setSession, move, setLoading }) 
     move(-1)
     setSession(oldSession => ({ ...oldSession, additions: [] }))
   }
-  console.log(corrections)
-
 
   return [
     <div className='image-display' key='image-display'>

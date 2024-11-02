@@ -48,16 +48,20 @@ export default class Session {
   }
 
   get people () {
-    return this.data.participants.map(person => new Person(person.id, this))
+    return this.participants.map(person => new Person(person.id, this))
   }
 
   get user () {
     return this.currentParticipant && this.currentParticipant.id ? new Person(this.currentParticipant.id, this) : undefined
   }
 
+  get participants () {
+    return this.data.participants.filter((person, index, people) => people.findIndex(p => p.id === person.id) === index)
+  }
+
   async loginAs (person) {
-    if(!this.data.participants.some(participant => participant.id === person.id)) {
-      await this.update({ $push: { 'data.participants': person } })
+    if(!this.participants.some(participant => participant.id === person.id)) {
+      await this.update({ $addToSet: { 'data.participants': person } })
     }
     this.currentParticipant = person
   }
@@ -93,7 +97,7 @@ export default class Session {
 
   async sync () {
     if (Date.now() - this.lastSync < 3000) return
-    const lastSync = new Date()
+    this.lastSync = new Date()
     const updated = await Session.load(this.id)
     if (this.updated < updated.updated) {
       this.data = updated.data

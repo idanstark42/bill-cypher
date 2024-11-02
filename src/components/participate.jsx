@@ -37,14 +37,18 @@ export default function Participate ({ enabled=true }) {
 
     processImage()
 
-    if (!session) return
-    if (!session.user) session.loginAs({ name: user, id: userId })
-      setSelectedNumbers(session.user.participations.map(participation => participation.item))
+    const processSession = async () => {
+      if (!session) return
+      if (!session.user) await session.loginAs({ name: user, id: userId })
+        setSelectedNumbers(session.user.participations.map(participation => participation.item))
 
-    session.onUpdated(() =>{ 
-      setLoading(true)
-      setLoading(false)
-    })
+      session.onUpdated(() =>{ 
+        setLoading(true)
+        setLoading(false)
+      })
+    }
+
+    processSession()
   }, [session])
 
   useEffect(() => {

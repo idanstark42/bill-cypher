@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import { FaUser, FaClipboard, FaList, FaUsers } from 'react-icons/fa'
 
 import Dashboard from '../components/admin/dashboard'
+import Items from '../components/admin/items'
+import People from '../components/admin/people'
 import Participate from '../components/participate'
 import User from '../components/user'
 import useSession from '../helpers/use-session'
@@ -21,8 +23,10 @@ export default function Admin () {
   }, [session, userId])
 
   const VIEWS = {
-    dashboard: { Component: Dashboard },
-    participate: { Component: Participate }
+    dashboard: { Component: Dashboard, Icon: FaClipboard },
+    participate: { Component: Participate, Icon: FaUser },
+    items: { Component: Items, Icon: FaList },
+    people: { Component: People, Icon: FaUsers }
   }
 
   if (!session) return <></>
@@ -34,10 +38,7 @@ export default function Admin () {
     </div>
     {Object.entries(VIEWS).map(([key, { Component }]) => <Component session={session} setView={setView} enabled={currentView === key} />)}
     <div className='bottom-bar'>
-      <div className='button' onClick={() => setView('participate')}><FaUser /></div>
-      <div className='button' onClick={() => setView('items')}><FaList /></div>
-      <div className='button' onClick={() => setView('dashboard')}><FaClipboard /></div>
-      <div className='button' onClick={() => setView('people')}><FaUsers /></div>
+      {Object.entries(VIEWS).map(([key, { Icon }]) => <div className='button' onClick={() => setView(key)}><Icon /></div>)}
     </div>
   </>
 }
