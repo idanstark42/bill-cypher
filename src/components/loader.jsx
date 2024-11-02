@@ -1,3 +1,6 @@
+import { useLoading } from '../helpers/use-loading'
+
 export default function Loader () {
-  return <div className='loader' />
+  const { loading } = useLoading()
+  return loading ? <div className='loader' /> : ''
 }

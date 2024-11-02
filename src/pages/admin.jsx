@@ -1,42 +1,18 @@
 import { useState, useEffect } from 'react'
 
-import Session from '../helpers/session'
-import Loader from '../components/loader'
-
 import Dashboard from '../components/admin/dashboard'
 import User from '../components/user'
+import useSession from '../helpers/use-session'
 
 export default function Admin () {
-  const [loading, setLoading] = useState(true)
-  const [session, setSession] = useState(null)
-  const [syncInterval, setSyncInterval] = useState(null)
+  const session = useSession()
   const [currentView, setView] = useState('dashboard')
 
   const VIEWS = {
     dashboard: Dashboard
   }
 
-  useEffect(() => {
-    const id = window.location.pathname.split('/')[2]
-
-    const load = async () => {
-      const session = await Session.load(id)
-      setSession(session)
-      setLoading(false)
-    }
-
-    load()
-  }, [])
-
-  useEffect(() => {
-    if (session && !syncInterval) {
-      setSyncInterval(setInterval(() => session.sync(), 5000))
-    }
-  }, [session, syncInterval])
-
-  if (loading) return <Loader />
-
-  console.log(Object.entries(VIEWS))
+  if (!session) return <></>
 
   return <>
     <div className='top-bar'>

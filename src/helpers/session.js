@@ -73,6 +73,10 @@ export default class Session {
     return this.total - this.items.reduce((total, item) => total + this.finalValue(item.value), 0)
   }
 
+  personalTotal (person) {
+    return 0
+  }
+
   finalValue (value) {
     return value * (1 + (this.tip / 100)) * (1 - this.discount / 100)
   }

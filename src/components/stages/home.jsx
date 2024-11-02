@@ -33,7 +33,16 @@ export default function Home   ({ session, setSession, move, setLoading }) {
       }
       const { width, height } = img.getBoundingClientRect()
       const numbers = (await getWords(imageFile)).filter(word => word.is_numeric)
-      numbers.forEach(number => { number.value = parseFloat(number.text.match(/\d+/)[0]) })
+      numbers.forEach(number => {
+        number.value = parseFloat(number.text.match(/\d+/)[0])
+        delete number.page
+        delete number.text
+        delete number.is_numeric
+        delete number.block
+        delete number.line
+        delete number.paragraph
+        delete number.baseline
+      })
       setSession(oldSession => ({
         ...oldSession,
         numbers,

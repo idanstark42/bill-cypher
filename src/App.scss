@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Expletus+Sans:ital,wght@0,400..700;1,400..700&display=swap');
 
-html, body, #root {
+html, body, #root, #root > *:only-child {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -312,6 +312,19 @@ input[type="file"] {
   }
 }
 
+.buttons {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  box-sizing: border-box;
+  padding: 1rem;
+
+  > .button {
+    flex-grow: 1;
+    margin: 0;
+  }
+}
+
 .additions {
   display: flex;
   flex-direction: row;
@@ -386,4 +399,14 @@ input[type="file"] {
   padding: 1rem;
   box-sizing: border-box;
   color: black;
+}
+
+.participate > .content {
+  height: calc(100% - 2.5rem);
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
