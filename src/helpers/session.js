@@ -19,28 +19,33 @@ export default class Session {
   }
 
   get total () {
-    if (this.data.additions.total === undefined) return -1
+    if (this.data.additions.total === undefined || this.data.additions.total.length === 0) return 0
+    if (this.data.additions.total[0].value !== undefined) return this.data.additions.total[0].value
     return this._numberFromIndex(this.data.additions.total[0])
   }
 
+  async setTotal (value) {
+    await this.update({ $set: { 'data.additions.total': [{ value: Number(value) }] } })
+  }
+
   get tip () {
-    if (this.data.additions.tip === undefined) return 0
-    if (this.data.additions.tip[0].value) return this.data.additions.tip[0].value
+    if (this.data.additions.tip === undefined || this.data.additions.tip.length === 0) return 0
+    if (this.data.additions.tip[0].value !== undefined) return this.data.additions.tip[0].value
     return this._numberFromIndex(this.data.additions.tip[0])
   }
 
-  set tip (value) {
-    this.update({ $set: { 'data.additions.tip': [{ value }] } })
+  async setTip (value) {
+    await this.update({ $set: { 'data.additions.tip': [{ value: Number(value) }] } })
   }
 
   get discount () {
-    if (this.data.additions.discount === undefined) return 0
-    if (this.data.additions.discount[0].value) return this.data.additions.discount[0].value
+    if (this.data.additions.discount === undefined || this.data.additions.discount.length === 0) return 0
+    if (this.data.additions.discount[0].value !== undefined) return this.data.additions.discount[0].value
     return this._numberFromIndex(this.data.additions.discount[0])
   }
 
-  set discount (value) {
-    this.update({ $set: { 'data.additions.discount': [{ value }] } })
+  async setDiscount (value) {
+    await this.update({ $set: { 'data.additions.discount': [{ value: Number(value) }] } })
   }
 
   get items () {
@@ -66,8 +71,8 @@ export default class Session {
     this.currentParticipant = person
   }
 
-  personalTotal (person) {
-    return 0
+  get finalTotal () {
+    return this._priceAfterAdditions(this.total)
   }
 
   // private methods
@@ -77,7 +82,7 @@ export default class Session {
   }
 
   _priceAfterAdditions (price) {
-    return price * (1 + this.tip / 100) (1 - this.discount / 100)
+    return price * (1 + this.tip / 100) * (1 - this.discount / 100)
   }
 
   // IO methods

@@ -23,8 +23,8 @@ export default function EditableValue ({ name, control, style={}, inputStyle={} 
   }
 
   function input () {
-    return <div className='editing-value' style={inputStyle}>
-      <input name={name} type='text' value={tempValue} onChange={e => setTempValue(e.target.value)} autoFocus />
+    return <div className='editing-value' style={style}>
+      <input name={name} type='text' value={tempValue} onChange={e => setTempValue(e.target.value)} autoFocus style={inputStyle} />
       <div onClick={() => stopEditing(true)}><FaCheck /></div>
       <div onClick={() => setEditing(false)}><FaTimes /></div>
     </div>
@@ -32,7 +32,7 @@ export default function EditableValue ({ name, control, style={}, inputStyle={} 
 
   function closed () {
     return <div className='editing-value' onClick={startEditing} style={style}>
-      <span>{value || name}</span>
+      <span>{value === undefined ? name : value}</span>
       <FaEdit style={{ marginLeft: '0.5rem' }} />
     </div>
   }

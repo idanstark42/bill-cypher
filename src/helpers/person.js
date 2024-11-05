@@ -16,6 +16,10 @@ export default class Person {
     return this.session.data.participations.filter(participation => participation.person === this.id)
   }
 
+  get items () {
+    return this.participations.map(participation => this.session.items.find(item => item.index === participation))
+  }
+
   get total () {
     const participations = this.participations
     const items = this.session.items.filter(item => participations.some(participation => participation.item === item.index))
@@ -34,3 +38,61 @@ export default class Person {
     return await this.session.update({ $pull: { 'data.participations': { person: this.id, item: item.index } } })
   }
 }
+
+export function randomName () {
+  return names[Math.floor(Math.random() * names.length)]
+}
+
+const names = [
+  'Avalon',
+  'Helios',
+  'Valhalla',
+  'Elysium',
+  'Asgard',
+  'Freyja',
+  'Celestia',
+  'Aether',
+  'Erebus',
+  'Olympus',
+  'Midgard',
+  'Niflheim',
+  'Titania',
+  'Arcadia',
+  'Pangaea',
+  'Selene',
+  'Hyperion',
+  'Chimera',
+  'Gaia',
+  'Oberon',
+  'Lyra',
+  'Zephyr',
+  'Calypso',
+  'Nyx',
+  'Borealis',
+  'Orion',
+  'Mimir',
+  'Astraea',
+  'Icarus',
+  'Fenrir',
+  'Phoenix',
+  'Epona',
+  'Nephilim',
+  'Moros',
+  'Hesperia',
+  'Kronos',
+  'Stheno',
+  'Tartarus',
+  'Yggdrasil',
+  'Morpheus',
+  'Scylla',
+  'Cassandra',
+  'Circe',
+  'Andromeda',
+  'Phaedra',
+  'Heimdall',
+  'Elara',
+  'Drakon',
+  'Thanatos',
+  'Lerna',
+  'Tiamat'
+]
