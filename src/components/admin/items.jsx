@@ -22,9 +22,18 @@ function Item ({ item, session, setView }) {
     { name: 'shares', icon: <FaChartPie /> }
   ]
   const [tool, setTool] = useState('price')
+  const [loadingValue, setLoadingValue] = useState(false)
   const [loadingPersonAddition, setLoadingPersonAddition] = useState(false)
   const [additionalPerson, setAdditionalPerson] = useState('')
   const [loadingDivision, setLoadingDivision] = useState(false)
+
+  const setItemValue = async value => {
+    setLoadingValue(true)
+    setLoadingDivision(true)
+    await session.addCorrection(item.index, Number(value))
+    setLoadingValue(false)
+    setLoadingDivision(false)
+  }
 
   const addPerson = async () => {
     setLoadingDivision(true)
@@ -57,8 +66,11 @@ function Item ({ item, session, setView }) {
   const editable = item.isEditableBy(tool)
   const nonParticipating = session.people.filter(person => !person.participates(item))
 
-  return <div className='item card' style={{ gridTemplateRows: `2rem 2rem repeat(${people.length + 1}, 1.5rem)` }}>
+  return <div className='item card' style={{ gridTemplateRows: `2rem 2rem 2rem repeat(${people.length + 1}, 1.5rem)` }}>
     <PositionedImage item={item} imageURL={session.data.image} />
+    <div className='text' style={{ gridColumn: '1 / 5', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontWeight: 'bold' }}>
+      Total: {loadingValue ? '...' : <EditableValue name='total' control={[item.value, setItemValue]} style={{ minWidth: 'unset' }} inputStyle={{ width: '3rem' }} />}
+    </div>
     {people.length === 0 ?
       <div className='text' style={{ gridArea: '2 / 1 / 5 / 5', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>
         No one has claimed this item yet

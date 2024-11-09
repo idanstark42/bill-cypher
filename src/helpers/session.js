@@ -48,6 +48,11 @@ export default class Session {
     await this.update({ $set: { 'data.additions.discount': [{ value: Number(value) }] } })
   }
 
+  async addCorrection (index, value) {
+    this.data.corrections[index] = value
+    await this.update({ $set: { 'data.corrections': this.data.corrections } })
+  }
+
   get items () {
     return this.data.selectedNumbers.map(index => new Item(index, this))
   }

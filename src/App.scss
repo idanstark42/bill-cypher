@@ -498,12 +498,10 @@ select {
 }
 
 .big.counter {
-  background: #f0d07d;
+  background: #f0d07daa;
   color: black;
-  border-radius: 50%;
-  width: 10rem;
-  height: 10rem;
-  font-size: 2rem;
+  width: 100%;
+  font-size: 1.5rem;
 
   display: flex;
   justify-content: center;
