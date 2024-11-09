@@ -6,6 +6,7 @@ import { useLoading } from '../helpers/use-loading'
 
 export default function Participate ({ enabled=true }) {
   const [loading, setLoading] = useState(false)
+  const [canSave, setCanSave] = useState(false)
   const { user, userId } = useUser()
   const { whileLoading } = useLoading()
   const [selectedNumbers, setSelectedNumbers] = useState([])
@@ -53,7 +54,7 @@ export default function Participate ({ enabled=true }) {
 
   useEffect(() => {
     (async () => {
-      if (!session) return
+      if (!session || !canSave) return
       setLoading(true)
       const currentPerson = session.user
       const preexistingNumbers = currentPerson.participations.map(participation => participation.item)
@@ -68,12 +69,14 @@ export default function Participate ({ enabled=true }) {
       setLoading(false)
     })()
   }, [selectedNumbers])
+
   const toggleNumber = index => {
     if (selectedNumbers.includes(index)) {
       setSelectedNumbers(selectedNumbers.filter(i => i !== index))
     } else {
       setSelectedNumbers([...selectedNumbers, index])
     }
+    setCanSave(true)
   }
 
   const selected = index => selectedNumbers.includes(index)
@@ -95,7 +98,7 @@ export default function Participate ({ enabled=true }) {
         }} value={number.value}></div>)}
     </div>
     <div className='text'>
-      Total: {loading ? '...' : session.user?.total}
+      Total: {loading ? '...' : session.user?.summary}
     </div>
   </div>
 }

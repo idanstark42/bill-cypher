@@ -61,7 +61,13 @@ export default class Session {
   }
 
   get participants () {
-    return this.data.participants.filter((person, index, people) => people.findIndex(p => p.id === person.id) === index)
+    return this.data.participants
+      .filter((person, index, people) => people.findIndex(p => p.id === person.id) === index)
+  }
+
+  get participations () {
+    return this.data.participations
+      .filter((participation, index, participations) => participations.findIndex(p => p.person === participation.person && p.item === participation.item) === index)
   }
 
   async loginAs (person) {
@@ -72,7 +78,7 @@ export default class Session {
   }
 
   get finalTotal () {
-    return this._priceAfterAdditions(this.total)
+    return this.priceAfterAdditions(this.total)
   }
 
   // private methods
@@ -81,7 +87,7 @@ export default class Session {
     return this.data.corrections[index] || this.data.numbers[index].value
   }
 
-  _priceAfterAdditions (price) {
+  priceAfterAdditions (price) {
     return price * (1 + this.tip / 100) * (1 - this.discount / 100)
   }
 

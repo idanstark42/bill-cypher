@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { FaChartPie, FaDollarSign, FaPercent, FaTrash } from 'react-icons/fa'
 
 import EditableValue from '../editable-value'
@@ -15,8 +15,6 @@ export default function People ({ session, setView, enabled }) {
     await session.fullUpdate({ $addToSet: { 'data.participants': { name: randomName(), id: Math.random().toString(36).substring(2, 15) } } })
     setLoadingAddPerson(false)
   }
-
-  console.log(session.people)
   
   return <>
     <div className='list'>
@@ -49,32 +47,30 @@ function Person ({ person, session }) {
     setLoadingRemoval(false)
   }
   
-  return <div className={`person card ${loadingRemoval ? 'loading' : ''}`} style={{ gridTemplateRows: `2rem 2rem repeat(${items.length+1}, 1rem)` }}>
-    {loadingRemoval ? '' : <>{loadingName ? <div>...</div> : <div className='text' style={{ gridColumn: '1 / 4', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', fontWeight: 'bold', height: '2rem', textAlign: 'left' }}>
+  return <div className={`person card ${loadingRemoval ? 'loading' : ''}`} style={{ gridTemplateRows: `2rem 2rem repeat(${items.length+1}, 1.2rem)`, padding: '0 1rem' }}>
+    {loadingRemoval ? '' : <>{loadingName ? <div>...</div> : <div className='text' style={{ gridColumn: '1 / 3', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', fontWeight: 'bold', height: '2rem', textAlign: 'left' }}>
       <EditableValue control={[person.name, name => rename(name)]} style={{ width: '100%', minWidth: 'unset' }} inputStyle={{ width: '7rem' }} />
     </div>}
-    <div className='text' style={{ gridColumn: '4 / 6', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontWeight: 'bold', height: '2rem' }}>
-      Total: {session._priceAfterAdditions(person.total).toFixed(2)}
+    <div className='text' style={{ gridColumn: '3  / 5', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontWeight: 'bold', height: '2rem' }}>
+      Total: {session.priceAfterAdditions(person.total).toFixed(2)}
     </div>
-    {items.length === 0 ? <div style={{ gridArea: '2 / 1 / 6 / 6', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem', gap: '1rem' }}>
+    {items.length === 0 ? <div style={{ gridArea: '2 / 1 / 5 / 5', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem', gap: '1rem' }}>
       <div>No items</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', cursor: 'pointer' }} onClick={removePerson}>
       <FaTrash />remove person
       </div>
     </div> :
     <>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>item</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', fontWeight: 'bold' }}>item</div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FaDollarSign /></div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FaPercent /></div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FaChartPie /></div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>final</div>
-      {items.map(item => <>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.value.toFixed(2)}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', fontWeight: 'bold' }}>final</div>
+      {items.map(item => <React.Fragment key={item.index}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>{item.value.toFixed(2)}</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.priceOf(person).toFixed(2)}</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.percentOf(person).toFixed(0)}%</div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.sharesOf(person).toFixed(0)}</div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{session._priceAfterAdditions(item.priceOf(person)).toFixed(2)}</div>
-      </>)}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>{session.priceAfterAdditions(item.priceOf(person)).toFixed(2)}</div>
+      </React.Fragment>)}
     </>}</>}
   </div>
 }

@@ -32,12 +32,24 @@ export default class Item {
   // division
 
   get participations () {
-    return this.session.data.participations.filter(participation => participation.item === this.index)
+    return this.session.participations.filter(participation => participation.item === this.index)
   }
 
   get people () {
     const participations = this.participations
     return this.session.people.filter(person => participations.some(participation => participation.person === person.id))
+  }
+
+  isEditableBy (tool) {
+    return this.participations.length > 1 && this.divisionFunction.isEditableBy(tool)
+  }
+
+  isResettable (person, tool) {
+    return this.divisionFunction.isResettable(person, tool)
+  }
+
+  reset (person, tool) {
+    this.divisionFunction.reset(person, tool)
   }
 
   priceOf (person) {
@@ -55,22 +67,25 @@ export default class Item {
   setPriceOf (person, value) {
     if (this.divisionFunction instanceof PriceDevisionFunction) {
       this.divisionFunction.addConstraint(person, value)
+    } else {
+      this.divisionFunction = new PriceDevisionFunction(this._item.value, this.people.length, [{ person: person.id, value }])
     }
-    this.divisionFunction = new PriceDevisionFunction(this._item.value, this.people.length, [{ person, value }])
   }
 
   setPercentOf (person, value) {
     if (this.divisionFunction instanceof PercentDevisionFunction) {
       this.divisionFunction.addConstraint(person, value)
+    } else {
+      this.divisionFunction = new PercentDevisionFunction(this._item.value, this.people.length, [{ person: person.id, value }])
     }
-    this.divisionFunction = new PercentDevisionFunction(this._item.value, this.people.length, [{ person, value }])
   }
 
   setSharesOf (person, value) {
     if (this.divisionFunction instanceof SharesDevisionFunction) {
       this.divisionFunction.addConstraint(person, value)
+    } else {
+      this.divisionFunction = new SharesDevisionFunction(this._item.value, this.people.length, [{ person: person.id, value }])
     }
-    this.divisionFunction = new SharesDevisionFunction(this._item.value, this.people.length, [{ person, value }])
   }
 
   flush () {
@@ -104,6 +119,18 @@ class BasicDevisionFunction {
     this.length = length
   }
 
+  isEditableBy () {
+    return true
+  }
+
+  isResettable () {
+    return false
+  }
+
+  reset () {
+    return
+  }
+
   priceOf () {
     return this.total / this.length
   }
@@ -117,7 +144,7 @@ class BasicDevisionFunction {
   }
 
   flush (item) {
-    item.participantions.forEach(participantion => cleanParticipation(participantion))
+    item.participations.forEach(participantion => cleanParticipation(participantion))
   }
 }
 
@@ -129,13 +156,31 @@ class ConstrainedDevisionFunction {
     this.constaints = constraints
   }
 
+  isEditableBy (tool) {
+    return tool !== this.name || this.constaints.length < (this.length - 1)
+  }
+
+  isResettable (person, tool) {
+    return this.name === tool && this.constaints.some(c => c.person === person.id)
+  }
+
+  reset (person, tool) {
+    if (tool !== this.name) return
+    this.constaints = this.constaints.filter(c => c.person !== person.id)
+  }
+
   base (person) {
     const constraint = this.constaints.find(c => c.person === person.id)
     return constraint ? constraint.value : this._unconstrainedValue()
   }
 
   addConstraint (person, value) {
-    this.constaints.push({ person: person.id, value })
+    const existing = this.constaints.find(c => c.person === person.id)
+    if (existing) {
+      existing.value = value
+    } else {
+      this.constaints.push({ person: person.id, value })
+    }
   }
 
   _unconstrainedValue () {
@@ -144,7 +189,7 @@ class ConstrainedDevisionFunction {
   }
 
   flush (item) {
-    item.participantions.forEach(participation => {
+    item.participations.forEach(participation => {
       cleanParticipation(participation)
       const constraint = this.constaints.find(c => c.person === participation.person)
       if (constraint) {
@@ -223,7 +268,7 @@ class SharesDevisionFunction extends ConstrainedDevisionFunction {
 
 function cleanParticipation (participation) {
   for (const key in participation) {
-    if (!BASIC_PARTICIPATION_KEYS.include(key)) {
+    if (!BASIC_PARTICIPATION_KEYS.includes(key)) {
       delete participation[key]
     }
   }

@@ -6,46 +6,6 @@ import EditableValue from '../editable-value'
 
 export default function Dashboard ({ enabled=true, session, setView }) {
   const [showingCopy, setShowingCopy] = useState(false)
-  const [tip, setTip] = useState(session?.tip)
-  const [loadingTip, setLoadingTip] = useState(false)
-  const [discount, setDiscount] = useState(session?.discount)
-  const [loadingDiscount, setLoadingDiscount] = useState(false)
-  const [total, setTotal] = useState(session?.discount)
-  const [loadingTotal, setLoadingTotal] = useState(false)
-
-  useEffect(() => {
-    if (!session) return
-    setTip(session.tip)
-    setDiscount(session.discount)
-    setTotal(session.total)
-  }, [session])
-
-  useEffect(() => {
-    if (!session) return
-    (async () => {
-      setLoadingTip(true)
-      await session.setTip(tip)
-      setLoadingTip(false)
-    })()
-  }, [tip, session, setLoadingTip])
-
-  useEffect(() => {
-    if (!session) return
-    (async () => {
-      setLoadingDiscount(true)
-      await session.setDiscount(discount)
-      setLoadingDiscount(false)
-    })()
-  }, [discount, session, setLoadingDiscount])
-
-  useEffect(() => {
-    if (!session) return
-    (async () => {
-      setLoadingTotal(true)
-      await session.setTotal(total)
-      setLoadingTotal(false)
-    })()
-  }, [total, session, setLoadingTotal])
 
   const copy = () => {
     navigator.clipboard.writeText(session.shareURL)
@@ -73,14 +33,14 @@ export default function Dashboard ({ enabled=true, session, setView }) {
         </div>
       </div>
       <div className='items' style={{ flexGrow: 1, overflowY: 'auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gridTemplateRows: `repeat(${session.items.length}, 2rem)` }}>
-        {session.items.map(item => <>
+        {session.items.map(item => <React.Fragment key={item.index}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.value}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {item.participations.length}
             </div>
             <div></div>
             <div></div>
-          </>
+          </React.Fragment>
         )}
       </div>
       <div style={{ width: '100%', height: '2px', background: 'black', margin: '0.5rem 0' }} />
@@ -91,14 +51,42 @@ export default function Dashboard ({ enabled=true, session, setView }) {
     </div>
     <div className='card actions' style={{ gridColumn: 'span 2', gridRow: 'span 2', display: 'grid', gridTemplateColumns: '1fr 1fr', gridAutoRows: '2rem 2rem' }}>
     <div style={{ display: 'flex', alignItems: 'center' }}>Bill</div>
-      {loadingTotal ? '...' : <EditableValue name='discount' control={[total, setTotal]} style={{ width: '5rem', minWidth: 0 }} inputStyle={{ width: '2rem', minWidth: 0 }} />}
+      <BackendEditableValue session={session} name='total' />
       <div style={{ display: 'flex', alignItems: 'center' }}>Tip</div>
-      {loadingTip ? '...' : <EditableValue name='tip' control={[tip, setTip]} style={{ width: '5rem', minWidth: 0 }} inputStyle={{ width: '2rem', minWidth: 0 }} />}
+      <BackendEditableValue session={session} name='tip' />
       <div style={{ display: 'flex', alignItems: 'center' }}>Discount</div>
-      {loadingDiscount ? '...' : <EditableValue name='discount' control={[discount, setDiscount]} style={{ width: '5rem', minWidth: 0 }} inputStyle={{ width: '2rem', minWidth: 0 }} />}
+      <BackendEditableValue session={session} name='discount' />
       <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>Total</div>
       <div style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>{session.finalTotal}</div>
     </div>
   </div>
 }
 
+function BackendEditableValue ({ session, name }) {
+  const [loading, setLoading] = useState(false)
+  const [canSave, setCanSave] = useState(false)
+  const [value, setValue] = useState(session[name])
+
+  useEffect(() => {
+    if (!session) return
+    setValue(session[name])
+  }, [session])
+
+  useEffect(() => {
+    if (!session || !canSave) return
+    (async () => {
+      setLoading(true)
+      await session['set' + name[0].toUpperCase() + name.slice(1)](value)
+      setLoading(false)
+    })()
+  }, [value, session, setLoading])
+
+  const update = value => {
+    setValue(value)
+    setCanSave(true)
+  }
+  
+  if (loading) return '...'
+
+  return <EditableValue name='discount' control={[value, update]} style={{ width: '5rem', minWidth: 0 }} inputStyle={{ width: '2rem', minWidth: 0 }} />
+}

@@ -13,7 +13,7 @@ export default class Person {
   }
 
   get participations () {
-    return this.session.data.participations.filter(participation => participation.person === this.id)
+    return this.session.participations.filter(participation => participation.person === this.id)
   }
 
   get items () {
@@ -26,16 +26,29 @@ export default class Person {
     return items.reduce((total, item) => total + item.priceOf(this), 0)
   }
 
+  get summary () {
+    const total = this.total
+    const tip = this.session.tip
+    const discount = this.session.discount
+    let string = `${this.total.toFixed(2)}`
+    if (tip) string += ` + ${tip.toFixed(0)}%`
+    if (discount) string += ` - ${discount.toFixed(2)}%`
+    if (tip || discount) string += ` = ${this.session.priceAfterAdditions(total).toFixed(2)}`
+    return string
+  }
+
   async participate (item) {
-    const participation = this.participations.find(participation => participation.item === item.index)
-    if (participation) return 'Already participated'
-    return await this.session.update({ $addToSet: { 'data.participations': { person: this.id, item: item.index } } })
+    if (this.participates(item)) return 'Already participated'
+    return await this.session.update({ $push: { 'data.participations': { person: this.id, item: item.index } } })
   }
 
   async unparticipate (item) {
-    const participation = this.participations.find(participation => participation.item === item.index)
-    if (!participation) return 'Not participated'
+    if (!this.participates(item)) return 'Not participated'
     return await this.session.update({ $pull: { 'data.participations': { person: this.id, item: item.index } } })
+  }
+
+  participates (item) {
+    return this.participations.some(participation => participation.item === item.index)
   }
 }
 

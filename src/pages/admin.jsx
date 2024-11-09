@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import { FaUser, FaClipboard, FaList, FaUsers } from 'react-icons/fa'
+import { FaRegCheckSquare , FaClipboard, FaList, FaUsers } from 'react-icons/fa'
 
 import Dashboard from '../components/admin/dashboard'
 import Items from '../components/admin/items'
@@ -24,7 +24,7 @@ export default function Admin () {
 
   const VIEWS = {
     dashboard: { Component: Dashboard, Icon: FaClipboard },
-    participate: { Component: Participate, Icon: FaUser },
+    participate: { Component: Participate, Icon: FaRegCheckSquare },
     items: { Component: Items, Icon: FaList },
     people: { Component: People, Icon: FaUsers }
   }
@@ -36,9 +36,9 @@ export default function Admin () {
       <div className='text'>ADMIN</div>
       <User />
     </div>
-    {Object.entries(VIEWS).map(([key, { Component }]) => <Component session={session} setView={setView} enabled={currentView === key} />)}
+    {Object.entries(VIEWS).map(([key, { Component }]) => <Component session={session} setView={setView} enabled={currentView === key} key={key} />)}
     <div className='bottom-bar'>
-      {Object.entries(VIEWS).map(([key, { Icon }]) => <div className='button' onClick={() => setView(key)}><Icon /></div>)}
+      {Object.entries(VIEWS).map(([key, { Icon }]) => <div className={`button ${currentView === key ? 'selected' : ''}`} onClick={() => setView(key)} key={key}><Icon /></div>)}
     </div>
   </>
 }
