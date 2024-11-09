@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext, createContext } from 'react'
 
 import { useLoading } from './use-loading'
 import Session from './session'
 
-export default function useSession () {
+const SessionContext = createContext()
+
+export function SessionProvider ({ children }) {
   const [session, setSession] = useState()
-  const { loading, setLoading } = useLoading()
+  const { setLoading } = useLoading()
   const [syncInterval, setSyncInterval] = useState(null)
 
   useEffect(() => {
@@ -13,12 +15,20 @@ export default function useSession () {
 
     const load = async () => {
       const session = await Session.load(id)
+      session.fullUpdate = async (...params) => {
+        await session.update(...params)
+        await load()
+      }
+      session.fullRawUpdate = async (...params) => {
+        await session.rawUpdate(...params)
+        await load()
+      }
       setSession(session)
       setLoading(false)
     }
 
     load()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (session && !syncInterval) {
@@ -26,5 +36,9 @@ export default function useSession () {
     }
   }, [session, syncInterval])
 
-  return session
+  return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>
+}
+
+export function useSession () {
+  return useContext(SessionContext)
 }

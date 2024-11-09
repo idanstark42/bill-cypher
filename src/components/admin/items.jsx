@@ -21,23 +21,34 @@ function Item ({ item, session }) {
     { name: 'shares', icon: <FaChartPie /> }
   ]
   const [tool, setTool] = useState('price')
+  const [loadingPersonAddition, setLoadingPersonAddition] = useState(false)
   const [additionalPerson, setAdditionalPerson] = useState('')
 
   const addPerson = async () => {
+    setLoadingPersonAddition(true)
     const people = session.people
-    const person = people.find(person => person.name === additionalPerson) || people[Math.round(Math.random() * people.length)]
+    const person = people.find(person => person.name === additionalPerson)
     await person.participate({ index: item.index })
+    setAdditionalPerson('')
+    setLoadingPersonAddition(false)
   }
 
   const people = item.people
 
   return <div className='item card' style={{ gridTemplateRows: `2rem 2rem repeat(${people.length + 1}, 1.5rem)` }}>
     <PositionedImage item={item} imageURL={session.data.image} />
-    {people.length === 0 ? <div className='text' style={{ gridArea: '2 / 1 / 5 / 5', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>
-      No one has claimed this item yet
-      <div className='button' style={{ margin: '1rem 0 0 0', height: '2rem', border: '2px solid black' }}
-        onClick={addPerson}>Add someone</div>
-    </div> : <>
+    {people.length === 0 ? <>
+      <div className='text' style={{ gridArea: '2 / 1 / 5 / 5', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontSize: '1.2rem' }}>
+        No one has claimed this item yet
+      </div>
+      <div style={{ gridColumn: '1 / 5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+        <select name='additional-person' value={additionalPerson} onChange={e => setAdditionalPerson(e.target.value)} style={{ flex: 1 }}>
+          <option value=''>Select a person</option>
+          {session.people.map(person => <option value={person.name}>{person.name}</option>)}
+        </select>
+        <FaPlus onClick={addPerson} />
+      </div>
+    </> : <>
       <div className='text' style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', fontWeight: 'bold', height: '2rem' }}>
         participants
       </div>
@@ -63,19 +74,22 @@ function Item ({ item, session }) {
           {person.name}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {item[tool + 'Of'](person)}
+          {item[tool + 'Of'](person).toFixed(2)}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {Math.round(session._priceAfterAdditions(item.priceOf(person)) * 100) / 100}
+          {session._priceAfterAdditions(item.priceOf(person)).toFixed(2)}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <FaTrash onClick={() => person.unparticipate(item.id)} />
+          <FaTrash onClick={() => person.unparticipate(item.index)} />
         </div>
       </>)}
-      <div style={{ gridColumn: '1 / 5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <input name='additional-person' type='text' value={additionalPerson} onChange={e => setAdditionalPerson(e.target.value)} />
+      {loadingPersonAddition ? '...' : <div style={{ gridColumn: '1 / 5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+        <select name='additional-person' value={additionalPerson} onChange={e => setAdditionalPerson(e.target.value)} style={{ flex: 1 }}>
+          <option value=''>Select a person</option>
+          {session.people.map(person => <option value={person.name}>{person.name}</option>)}
+        </select>
         <FaPlus onClick={addPerson} />
-      </div>
+      </div>}
     </>
     }
   </div>

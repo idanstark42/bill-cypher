@@ -7,7 +7,7 @@ import Items from '../components/admin/items'
 import People from '../components/admin/people'
 import Participate from '../components/participate'
 import User from '../components/user'
-import useSession from '../helpers/use-session'
+import { useSession } from '../helpers/use-session'
 import { useUser } from '../helpers/user'
 
 export default function Admin () {

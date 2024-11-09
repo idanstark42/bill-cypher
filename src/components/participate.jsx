@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import { useUser } from '../helpers/user'
-import useSession from '../helpers/use-session'
+import { useSession } from '../helpers/use-session'
 import { useLoading } from '../helpers/use-loading'
 
 export default function Participate ({ enabled=true }) {

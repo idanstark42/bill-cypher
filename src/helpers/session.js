@@ -95,9 +95,18 @@ export default class Session {
     const updated = new Date()
     if (update.$set) update.$set.updated = updated
     else update.$set = { updated }
-    await (await Session.collection()).updateOne({ _id: { $oid: this.id } }, update, options)
+    await (await Session.collection()).updateOne({ filter: { _id: { $oid: this.id } }, update, options })
     const response = await (await Session.collection()).findOne({ _id: { $oid: this.id } })
     this.data = response.data
+  }
+
+  async rawUpdate (filter, update, options) {
+    const updated = new Date()
+    if (update.$set) update.$set.updated = updated
+    else update.$set = { updated }
+    await (await Session.collection()).updateOne({ filter, update, ...options })
+    const response = await (await Session.collection()).findOne({ _id: { $oid: this.id } })
+    this.data = response
   }
 
   async sync () {

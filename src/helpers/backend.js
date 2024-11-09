@@ -61,15 +61,15 @@ export class MongoClient {
     return response.document
   }
 
-  async updateOne (collection, filter, update) {
-    return await this.request('updateOne', { database: MONGODB_DATABASE, collection, filter, update })
+  async updateOne (collection, params) {
+    return await this.request('updateOne', { database: MONGODB_DATABASE, collection, ...params })
   }
 
   async collection (collection) {
     return {
       insertOne: document => this.insetOne(collection, document),
       findOne: filter => this.findOne(collection, filter),
-      updateOne: (filter, update) => this.updateOne(collection, filter, update)
+      updateOne: params => this.updateOne(collection, params)
     }
   }
 

@@ -17,7 +17,7 @@ export default class Person {
   }
 
   get items () {
-    return this.participations.map(participation => this.session.items.find(item => item.index === participation))
+    return this.participations.map(participation => this.session.items.find(item => item.index === participation.item))
   }
 
   get total () {

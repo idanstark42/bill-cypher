@@ -37,6 +37,16 @@ input[type="file"] {
   display: none;
 }
 
+select {
+  background: none;
+  color: black;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  margin-left: -0.25rem;
+  border-bottom: 1px solid black;
+}
+
 .loader {
   position: fixed;
   top: 0;
@@ -61,6 +71,18 @@ input[type="file"] {
   }
 }
 
+@keyframes load-left-to-right {
+  0% {
+    background-position: 0% 50%
+  }
+  50% {
+    background-position: -100% 50%
+  }
+  100% {
+    background-position: -200% 50%
+  }
+}
+
 .editing-value {
   display: flex;
   flex-direction: row;
@@ -77,6 +99,7 @@ input[type="file"] {
     background: #000000AA;
     color: white;
     border-bottom: 1px solid black;
+    max-width: calc(100% - 3rem);
   }
 
   > span {
@@ -433,11 +456,17 @@ input[type="file"] {
 
 .person.card {
   display: grid;
-  grid-template-columns: 3fr 1fr 2fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   text-align: left;
 
   > :first-child {
     grid-column: 1 / 5;
+  }
+
+  &.loading {
+    background: linear-gradient(90deg, #000000 0%, #f0d07d33 40%, #f0d07d33 60%, #000000 100%);
+    background-size: 200% 200%;
+    animation: load-left-to-right 3s linear infinite;
   }
 }
 
